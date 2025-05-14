@@ -25,50 +25,15 @@
       }
 
       createUnityInstance(document.querySelector("#unity-canvas"), {
-        dataUrl: "Build/F_Netlify.data.unityweb",
-        frameworkUrl: "Build/F_Netlify.framework.js.unityweb",
-        codeUrl: "Build/F_Netlify.wasm.unityweb",
+        dataUrl: "Build/F_Netlify.data",
+        frameworkUrl: "Build/F_Netlify.framework.js",
+        codeUrl: "Build/F_Netlify.wasm",
         streamingAssetsUrl: "StreamingAssets",
         companyName: "felicitygames",
         productName: "Cup Quest",
         productVersion: "3.5.5",
         // matchWebGLToCanvasSize: false, // Uncomment this to separately control WebGL canvas render size and DOM element size.
         // devicePixelRatio: 1, // Uncomment this to override low DPI rendering on high DPI displays.
-		
-		// Get the canvas element
-var canvas = document.getElementById('unity-canvas');
-
-// Function to resize the canvas
-function resizeCanvas() {
-    // Get the window dimensions
-    var windowWidth = window.innerWidth;
-    var windowHeight = window.innerHeight;
-
-    // Calculate the desired canvas dimensions based on your game's aspect ratio
-    var aspectRatio = 16/9;  // Example: 16:9 aspect ratio
-    var canvasWidth = windowWidth;
-    var canvasHeight = windowWidth / aspectRatio;
-
-    // If the height exceeds the window height, adjust width and height
-    if (canvasHeight > windowHeight) {
-        canvasHeight = windowHeight;
-        canvasWidth = windowHeight * aspectRatio;
-    }
-
-    // Set the canvas CSS width and height
-    canvas.style.width = canvasWidth + 'px';
-    canvas.style.height = canvasHeight + 'px';
-
-    // Optionally, update the WebGL render target size using Unity API
-    // (This might not be necessary if you're only using CSS scaling)
-    // Unity.ResizeCanvasToWindow();
-}
-
-// Call the resize function when the window is resized
-window.addEventListener('resize', resizeCanvas);
-
-// Call the resize function initially
-resizeCanvas();
       });
     </script>
   </body>
