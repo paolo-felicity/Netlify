@@ -35,6 +35,20 @@
         // matchWebGLToCanvasSize: false, // Uncomment this to separately control WebGL canvas render size and DOM element size.
         // devicePixelRatio: 1, // Uncomment this to override low DPI rendering on high DPI displays.
       });
+	  
+	  function updateResolutionBasedOnOrientation() {
+        const isPortrait = window.innerHeight > window.innerWidth;
+        const orientation = isPortrait ? "portrait" : "landscape";
+        
+        // Send message to Unity to adjust resolution
+        if (typeof unityInstance !== 'undefined') {
+          unityInstance.SendMessage("WebGLHelper_ResolutionAdaptor", "SetResolutionFromJS", orientation);
+        }
+      }
+
+      // Run when page is loaded or resized
+      window.addEventListener("load", updateResolutionBasedOnOrientation);
+      window.addEventListener("resize", updateResolutionBasedOnOrientation);
     </script>
   </body>
 </html>
