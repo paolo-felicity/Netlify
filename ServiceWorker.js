@@ -1,9 +1,9 @@
 const cacheName = "felicitygames-Cup Quest-3.5.5";
 const contentToCache = [
     "Build/F_Netlify.loader.js",
-    "Build/F_Netlify.framework.js",
-    "Build/F_Netlify.data",
-    "Build/F_Netlify.wasm",
+    "Build/F_Netlify.framework.js.unityweb",
+    "Build/F_Netlify.data.unityweb",
+    "Build/F_Netlify.wasm.unityweb",
     "TemplateData/style.css"
 
 ];
