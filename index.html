@@ -99,6 +99,55 @@
         });
       };
       document.body.appendChild(script);
+	  
+	  function updateCanvasSize() {
+  let aspectRatio;
+
+  if (window.innerHeight > window.innerWidth) {
+    // Portrait - 9:16
+    aspectRatio = 9 / 16;
+  } else {
+    // Landscape - 16:10
+    aspectRatio = 16 / 10;
+  }
+
+  const maxWidth = window.innerWidth;
+  const maxHeight = window.innerHeight;
+
+  let width = maxWidth;
+  let height = width / aspectRatio;
+
+  if (height > maxHeight) {
+    height = maxHeight;
+    width = height * aspectRatio;
+  }
+
+  canvas.style.width = `${width}px`;
+  canvas.style.height = `${height}px`;
+}
+
+window.addEventListener("resize", updateCanvasSize);
+window.addEventListener("orientationchange", updateCanvasSize);
+
+loadingBar.style.display = "block";
+updateCanvasSize();
+
+const script = document.createElement("script");
+script.src = loaderUrl;
+script.onload = () => {
+  createUnityInstance(canvas, config, (progress) => {
+    progressBarFull.style.width = 100 * progress + "%";
+  }).then((instance) => {
+    unityInstance = instance;
+    loadingBar.style.display = "none";
+    // fullscreenButton.onclick = () => {
+    //   unityInstance.SetFullscreen(1);
+    // };
+  }).catch((message) => {
+    alert(message);
+  });
+};
+document.body.appendChild(script);
     </script>
   </body>
 </html>
