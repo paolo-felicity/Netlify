@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "28997767453",
+    "project_id": "cup-quest",
+    "storage_bucket": "cup-quest.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:28997767453:android:a4300de049a38b275151f4",
+        "android_client_info": {
+          "package_name": "com.felicitygames.cupquest"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBhMx3VYFo0orNuvxwDdQ7Hny8uHN8XJaA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
