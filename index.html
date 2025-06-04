@@ -55,6 +55,25 @@
       <div id="unity-build-title">Find It</div>
     </div> -->
   </div>
+
+	
+  </head>
+  <body>
+    <div id="unity-container" class="unity-desktop">
+      <canvas id="unity-canvas" width=960 height=600 tabindex="-1"></canvas>
+      <div id="unity-loading-bar">
+        <div id="unity-logo"></div>
+        <div id="unity-progress-bar-empty">
+          <div id="unity-progress-bar-full"></div>
+        </div>
+      </div>
+      <div id="unity-warning"> </div>
+      <div id="unity-footer">
+        <div id="unity-webgl-logo"></div>
+        <div id="unity-fullscreen-button"></div>
+        <div id="unity-build-title">Cup Quest</div>
+      </div>
+    </div>
     <script>
 
       var container = document.querySelector("#unity-container");
@@ -89,20 +108,20 @@
       }
 
       var buildUrl = "Build";
-      var loaderUrl = buildUrl + "/Cup Quest.loader.js";
+      var loaderUrl = buildUrl + "/bb0d9ecdb05db3e84da20bd14a4f84dc.loader.js";
       var config = {
-        dataUrl: buildUrl + "/Cup Quest.data.unityweb",
-        frameworkUrl: buildUrl + "/Cup Quest.framework.js.unityweb",
-        codeUrl: buildUrl + "/Cup Quest.wasm.unityweb",
+        dataUrl: buildUrl + "/24d06016300492cd2a8e83c0e3df1bd5.data",
+        frameworkUrl: buildUrl + "/df130e2c5fa843fe2b5d28d70a9f712e.framework.js",
+        codeUrl: buildUrl + "/30004fa8b9e347596f1a71ddca88540a.wasm",
         streamingAssetsUrl: "StreamingAssets",
         companyName: "felicitygames",
         productName: "Cup Quest",
         productVersion: "3.5.5",
         showBanner: unityShowBanner,
       };
-	  let unityInstance;
 
-      function updateCanvasSize() {
+      let unityInstance;
+function updateCanvasSize() {
 	  let aspectRatio;
 
 	  if (window.innerHeight > window.innerWidth) {
@@ -142,13 +161,14 @@
 	  }).then((instance) => {
 		unityInstance = instance;
 		loadingBar.style.display = "none";
-		//fullscreenButton.onclick = () => {
+		// fullscreenButton.onclick = () => {
 		//   unityInstance.SetFullscreen(1);
 		// };
 	  }).catch((message) => {
 		alert(message);
 	  });
 	};
+
 
       document.body.appendChild(script);
 
