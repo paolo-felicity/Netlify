@@ -3,9 +3,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Unity WebGL Player | Cup Quest</title>
+    <title>Unity Web Player | Laser Survivor</title>
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
+  
   <style>
     html, body {
       margin: 0;
@@ -55,14 +56,9 @@
     </div> -->
   </div>
 
+  
     <script>
-
-      var container = document.querySelector("#unity-container");
       var canvas = document.querySelector("#unity-canvas");
-      var loadingBar = document.querySelector("#unity-loading-bar");
-      var progressBarFull = document.querySelector("#unity-progress-bar-full");
-      var fullscreenButton = document.querySelector("#unity-fullscreen-button");
-      var warningBanner = document.querySelector("#unity-warning");
 
       // Shows a temporary message banner/ribbon for a few seconds, or
       // a permanent error message on top of the canvas if type=='error'.
@@ -71,6 +67,7 @@
       // way that non-critical warnings and error messages are presented to the
       // user.
       function unityShowBanner(msg, type) {
+        var warningBanner = document.querySelector("#unity-warning");
         function updateBannerVisibility() {
           warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
         }
@@ -89,15 +86,16 @@
       }
 
       var buildUrl = "Build";
-      var loaderUrl = buildUrl + "/9853637125e801e9aae48e78dbbdcfca.loader.js";
+      var loaderUrl = buildUrl + "/437892b6ca1afcf6e9025a36529deeba.loader.js";
       var config = {
-        dataUrl: buildUrl + "/8a76515a96eb27832473f1e731b006cc.data.unityweb",
-        frameworkUrl: buildUrl + "/73d6cd1eace65aa0a3a6d8e25bdda065.framework.js.unityweb",
-        codeUrl: buildUrl + "/564bd98b90b275ad73ea145226dac660.wasm.unityweb",
+        arguments: [],
+        dataUrl: buildUrl + "/495693a5ac0bd3124ee4503c751a31aa.data.br",
+        frameworkUrl: buildUrl + "/8a0ac910ed880038dcffa9c7dd131e94.framework.js.br",
+        codeUrl: buildUrl + "/5c2c7f188e916ec183ba955349954acc.wasm.br",
         streamingAssetsUrl: "StreamingAssets",
-        companyName: "felicitygames",
-        productName: "Cup Quest",
-        productVersion: "3.5.5",
+        companyName: "Felicity Games",
+        productName: "Laser Survivor",
+        productVersion: "1.0.0",
         showBanner: unityShowBanner,
       };
 
