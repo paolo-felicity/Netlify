@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="en-us">
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>Unity Web Player | Laser Survivor</title>
-  <link rel="shortcut icon" href="TemplateData/favicon.ico">
-  <link rel="stylesheet" href="TemplateData/style.css">
-
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Unity Web Player | Laser Survivor</title>
+    <link rel="shortcut icon" href="TemplateData/favicon.ico">
+    <link rel="stylesheet" href="TemplateData/style.css">
+  </head>
+  
   <style>
     html, body {
       margin: 0;
@@ -37,9 +38,10 @@
       max-height: 100%;
     }
   </style>
-</head>
-<body>
-  <div id="unity-container">
+	
+  </head>
+  <body>
+    <div id="unity-container">
     <canvas id="unity-canvas" tabindex="-1"></canvas>
     <div id="unity-loading-bar">
       <div id="unity-logo"></div>
@@ -47,96 +49,113 @@
         <div id="unity-progress-bar-full"></div>
       </div>
     </div>
+    <!-- <div id="unity-warning"></div>
+    <div id="unity-footer">
+      <div id="unity-webgl-logo"></div>
+      <div id="unity-fullscreen-button"></div>
+      <div id="unity-build-title">Find It</div>
+    </div> -->
   </div>
 
-  <script>
-    const canvas = document.querySelector("#unity-canvas");
-    const loadingBar = document.querySelector("#unity-loading-bar");
-    const progressBarFull = document.querySelector("#unity-progress-bar-full");
+  
+    <script>
+      var canvas = document.querySelector("#unity-canvas");
 
-    function unityShowBanner(msg, type) {
-      // Warning banner container is optional; disable if not needed
-      let warningBanner = document.querySelector("#unity-warning");
-      if (!warningBanner) return;
-
-      function updateBannerVisibility() {
-        warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
-      }
-      const div = document.createElement('div');
-      div.innerHTML = msg;
-      warningBanner.appendChild(div);
-      if (type === 'error') div.style = 'background: red; padding: 10px;';
-      else {
-        if (type === 'warning') div.style = 'background: yellow; padding: 10px;';
-        setTimeout(() => {
-          warningBanner.removeChild(div);
-          updateBannerVisibility();
-        }, 5000);
-      }
-      updateBannerVisibility();
-    }
-
-    const buildUrl = "Build";
-    const loaderUrl = buildUrl + "/db0aa93c41e925557f3c63920819c81b.loader.js";
-    const config = {
-      arguments: [],
-      dataUrl: buildUrl + "/02eac13d5e409c18f5d61ec51cd261d8.data.unityweb",
-      frameworkUrl: buildUrl + "/77b68a046569b14a8849dd976150651e.framework.js.unityweb",
-      codeUrl: buildUrl + "/ac54e3714afa64147ad42325b52d0370.wasm.unityweb",
-      streamingAssetsUrl: "StreamingAssets",
-      companyName: "Felicity Games",
-      productName: "Laser Survivor",
-      productVersion: "1.0.0",
-      showBanner: unityShowBanner,
-    };
-
-    let unityInstance;
-
-    function updateCanvasSize() {
-      let aspectRatio;
-
-      if (window.innerHeight > window.innerWidth) {
-        // Portrait - 9:16
-        aspectRatio = 9 / 16;
-      } else {
-        // Landscape - 16:10
-        aspectRatio = 16 / 10;
+      // Shows a temporary message banner/ribbon for a few seconds, or
+      // a permanent error message on top of the canvas if type=='error'.
+      // If type=='warning', a yellow highlight color is used.
+      // Modify or remove this function to customize the visually presented
+      // way that non-critical warnings and error messages are presented to the
+      // user.
+      function unityShowBanner(msg, type) {
+        var warningBanner = document.querySelector("#unity-warning");
+        function updateBannerVisibility() {
+          warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
+        }
+        var div = document.createElement('div');
+        div.innerHTML = msg;
+        warningBanner.appendChild(div);
+        if (type == 'error') div.style = 'background: red; padding: 10px;';
+        else {
+          if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
+          setTimeout(function() {
+            warningBanner.removeChild(div);
+            updateBannerVisibility();
+          }, 5000);
+        }
+        updateBannerVisibility();
       }
 
-      const maxWidth = window.innerWidth;
-      const maxHeight = window.innerHeight;
+      var buildUrl = "Build";
+      var loaderUrl = buildUrl + "/99aca0b7d56a06d8f0a89f0cc67f3c8c.loader.js";
+      var config = {
+        arguments: [],
+        dataUrl: buildUrl + "/820f0e737da706725ec5641462f036ae.data.unityweb",
+        frameworkUrl: buildUrl + "/c64ae95dd77abcde138aade6e96ad5f6.framework.js.unityweb",
+        codeUrl: buildUrl + "/fcb0d260120d9986c855800ac6554cea.wasm.unityweb",
+        streamingAssetsUrl: "StreamingAssets",
+        companyName: "Felicity Games",
+        productName: "Laser Survivor",
+        productVersion: "1.0.0",
+        showBanner: unityShowBanner,
+      };
 
-      let width = maxWidth;
-      let height = width / aspectRatio;
+      
+const loadingBar = document.querySelector("#unity-loading-bar");
+const progressBarFull = document.querySelector("#unity-progress-bar-full");
 
-      if (height > maxHeight) {
-        height = maxHeight;
-        width = height * aspectRatio;
-      }
+let unityInstance;
+function updateCanvasSize() {
+	  let aspectRatio;
 
-      canvas.style.width = `${width}px`;
-      canvas.style.height = `${height}px`;
-    }
+	  if (window.innerHeight > window.innerWidth) {
+		// Portrait - 9:16
+		aspectRatio = 9 / 16;
+	  } else {
+		// Landscape - 16:10
+		aspectRatio = 16 / 10;
+	  }
 
-    window.addEventListener("resize", updateCanvasSize);
-    window.addEventListener("orientationchange", updateCanvasSize);
+	  const maxWidth = window.innerWidth;
+	  const maxHeight = window.innerHeight;
 
-    loadingBar.style.display = "block";
-    updateCanvasSize();
+	  let width = maxWidth;
+	  let height = width / aspectRatio;
 
-    const script = document.createElement("script");
-    script.src = loaderUrl;
-    script.onload = () => {
-      createUnityInstance(canvas, config, (progress) => {
-        progressBarFull.style.width = 100 * progress + "%";
-      }).then((instance) => {
-        unityInstance = instance;
-        loadingBar.style.display = "none";
-      }).catch((message) => {
-        alert(message);
-      });
-    };
-    document.body.appendChild(script);
-  </script>
-</body>
+	  if (height > maxHeight) {
+		height = maxHeight;
+		width = height * aspectRatio;
+	  }
+
+	  canvas.style.width = `${width}px`;
+	  canvas.style.height = `${height}px`;
+	}
+
+	window.addEventListener("resize", updateCanvasSize);
+	window.addEventListener("orientationchange", updateCanvasSize);
+
+	loadingBar.style.display = "block";
+	updateCanvasSize();
+
+	const script = document.createElement("script");
+	script.src = loaderUrl;
+	script.onload = () => {
+	  createUnityInstance(canvas, config, (progress) => {
+		progressBarFull.style.width = 100 * progress + "%";
+	  }).then((instance) => {
+		unityInstance = instance;
+		loadingBar.style.display = "none";
+		// fullscreenButton.onclick = () => {
+		//   unityInstance.SetFullscreen(1);
+		// };
+	  }).catch((message) => {
+		alert(message);
+	  });
+	};
+
+
+      document.body.appendChild(script);
+
+    </script>
+  </body>
 </html>
