@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>%PRODUCT_NAME%</title>
+    <title>Laser Survivor</title>
     <style>
       html, body {
         margin: 0;
@@ -15,8 +15,8 @@
       }
       #unity-canvas {
         display: block;
-        background: #000;
-        /* Optional: ensure the canvas always fills the viewport even before JS runs */
+        background: #000000;
+        /* Fill viewport even before JS runs */
         width: 100vw;
         height: 100vh;
       }
@@ -26,13 +26,13 @@
     <canvas id="unity-canvas" tabindex="-1"></canvas>
 
     <!-- Unity loader -->
-    <script src="%UNITY_WEBGL_LOADER_URL%"></script>
+    <script src="Build/0fcc1fd7f732daa1c81a79b1bccd96cf.loader.js"></script>
 
     <script>
       (function () {
         const canvas = document.getElementById("unity-canvas");
 
-        // Mobile viewport handling
+        // Mobile viewport handling (same as your Yandex snippet)
         if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
           var meta = document.createElement('meta');
           meta.name = 'viewport';
@@ -42,16 +42,16 @@
           document.body.style.textAlign = "left";
         }
 
-        // Build-time substituted URLs & metadata
+        // Build-time substituted URLs & metadata (modern tokens)
         const config = {
-          dataUrl: "%UNITY_WEBGL_DATA_URL%",
-          frameworkUrl: "%UNITY_WEBGL_FRAMEWORK_URL%",
-          codeUrl: "%UNITY_WEBGL_CODE_URL%",
+          dataUrl: "Build/b43b767581a5492fc8563644ec08fa8a.data.unityweb",
+          frameworkUrl: "Build/ea8423d205fe7515093b721ddb6f4d1b.framework.js.unityweb",
+          codeUrl: "Build/16f88a8e0bcde6edc590847c2fbdb337.wasm.unityweb",
           streamingAssetsUrl: "StreamingAssets",
-          companyName: "%COMPANY_NAME%",
-          productName: "%PRODUCT_NAME%",
-          productVersion: "%PRODUCT_VERSION%",
-          // We'll handle size manually so it truly tracks the viewport
+          companyName: "Felicity Games",
+          productName: "Laser Survivor",
+          productVersion: "1.0.0",
+          // We’ll size manually to truly track the viewport
           matchWebGLToCanvasSize: false
         };
 
@@ -59,28 +59,11 @@
           function resizeCanvas() {
             const w = window.innerWidth;
             const h = window.innerHeight;
+
             // Keep CSS & backing store in sync
-            canvas.style.width = w + "px";
+            canvas.style.width  = w + "px";
             canvas.style.height = h + "px";
-            canvas.width = w;
+            canvas.width  = w;
             canvas.height = h;
 
-            if (unityInstance.Module && unityInstance.Module.setCanvasSize) {
-              // For HiDPI you could multiply by devicePixelRatio if you prefer crisper rendering
-              unityInstance.Module.setCanvasSize(w, h);
-            }
-          }
-
-          // Initial + on resize
-          resizeCanvas();
-          window.addEventListener("resize", resizeCanvas);
-
-          // Optional: ResizeObserver catches CSS/layout-driven changes, too
-          if ("ResizeObserver" in window) {
-            new ResizeObserver(resizeCanvas).observe(document.body);
-          }
-        });
-      })();
-    </script>
-  </body>
-</html>
+            if (unityInstance.Modul
