@@ -1,159 +1,168 @@
 <!DOCTYPE html>
 <html lang="en-us">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Unity Web Player | Laser Survivor</title>
-    <link rel="shortcut icon" href="TemplateData/favicon.ico">
-    <link rel="stylesheet" href="TemplateData/style.css">
-  
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes" />
+  <title>%UNITY_PRODUCT_NAME%</title>
   <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      background: black;
-      width: 100%;
-      height: 100%;
-    }
+    /* Page reset & fullscreen canvas */
+    html, body { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; overflow: hidden; }
+    #unity-container { position: fixed; inset: 0; display: grid; place-items: center; }
+    #unity-canvas { display: block; background: #000; outline: none; }
 
-    #unity-container {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: black;
-      overflow: hidden;
-    }
+    /* Loading overlay */
+    #loading { position: fixed; inset: 0; display: grid; place-items: center; background: #000; transition: opacity .25s ease; }
+    #loading.hide { opacity: 0; pointer-events: none; }
+    #loading .box { width: min(420px, 80vw); padding: 16px 20px; border-radius: 16px; background: rgba(255,255,255,0.06); backdrop-filter: blur(8px); color: #fff; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; }
+    #progress { width: 100%; height: 8px; background: rgba(255,255,255,0.15); border-radius: 999px; overflow: hidden; margin-top: 10px; }
+    #progress > i { display: block; height: 100%; width: 0%; background: #fff; }
+    #meta { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 8px; font-size: 12px; opacity: .8; }
 
-    #unity-canvas {
-      background: #231F20;
-      display: block;
-      max-width: 100%;
-      max-height: 100%;
+    /* Top-right controls */
+    #controls { position: fixed; right: 10px; top: 10px; display: flex; gap: 8px; z-index: 5; }
+    .btn { appearance: none; border: 0; border-radius: 12px; padding: 8px 12px; font-size: 12px; font-weight: 600; color: #000; background: #fff; cursor: pointer; }
+    .btn:disabled { opacity: .5; cursor: default; }
+
+    /* Mobile tweaks */
+    @media (max-width: 768px) {
+      .btn { padding: 10px 14px; font-size: 13px; }
     }
   </style>
-	
-  </head>
-  <body>
-    <div id="unity-container">
-    <canvas id="unity-canvas" tabindex="-1"></canvas>
-    <div id="unity-loading-bar">
-      <div id="unity-logo"></div>
-      <div id="unity-progress-bar-empty">
-        <div id="unity-progress-bar-full"></div>
-      </div>
-    </div>
-    <!-- <div id="unity-warning"></div>
-    <div id="unity-footer">
-      <div id="unity-webgl-logo"></div>
-      <div id="unity-fullscreen-button"></div>
-      <div id="unity-build-title">Find It</div>
-    </div> -->
+</head>
+<body>
+  <!-- Controls (Fullscreen + Pause/Resume hooks) -->
+  <div id="controls">
+    <button id="fsBtn" class="btn" title="Fullscreen">Fullscreen</button>
   </div>
 
-  
-    <script>
-      var canvas = document.querySelector("#unity-canvas");
+  <!-- Canvas Host -->
+  <div id="unity-container">
+    <canvas id="unity-canvas" tabindex="-1"></canvas>
+  </div>
 
-      // Shows a temporary message banner/ribbon for a few seconds, or
-      // a permanent error message on top of the canvas if type=='error'.
-      // If type=='warning', a yellow highlight color is used.
-      // Modify or remove this function to customize the visually presented
-      // way that non-critical warnings and error messages are presented to the
-      // user.
-      function unityShowBanner(msg, type) {
-        var warningBanner = document.querySelector("#unity-warning");
-        function updateBannerVisibility() {
-          warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
+  <!-- Loading Overlay -->
+  <div id="loading">
+    <div class="box">
+      <div><strong>%UNITY_PRODUCT_NAME%</strong></div>
+      <div id="status">Loading…</div>
+      <div id="progress"><i></i></div>
+      <div id="meta">
+        <span>%UNITY_COMPANY_NAME%</span>
+        <span>%UNITY_VERSION%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Unity Loader -->
+  <script src="%UNITY_WEBGL_LOADER_URL%"></script>
+  <script>
+    (function() {
+      const canvas   = document.getElementById('unity-canvas');
+      const loading  = document.getElementById('loading');
+      const barFill  = document.querySelector('#progress > i');
+      const statusEl = document.getElementById('status');
+      const fsBtn    = document.getElementById('fsBtn');
+
+      // --- Dynamic resize: match canvas to window while preserving device pixel ratio caps
+      function resizeCanvas() {
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+        canvas.width = w;
+        canvas.height = h;
+        canvas.style.width = w + 'px';
+        canvas.style.height = h + 'px';
+        if (unityInstance && unityInstance.Module && unityInstance.Module.setCanvasSize) {
+          unityInstance.Module.setCanvasSize(w, h);
         }
-        var div = document.createElement('div');
-        div.innerHTML = msg;
-        warningBanner.appendChild(div);
-        if (type == 'error') div.style = 'background: red; padding: 10px;';
-        else {
-          if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
-          setTimeout(function() {
-            warningBanner.removeChild(div);
-            updateBannerVisibility();
-          }, 5000);
-        }
-        updateBannerVisibility();
       }
 
-      var buildUrl = "Build";
-      var loaderUrl = buildUrl + "/e5eb64b4103455de97ce85f9d3624610.loader.js";
-      var config = {
-        arguments: [],
-        dataUrl: buildUrl + "/9affb2351f31630ae59e12c00c874a5f.data.unityweb",
-        frameworkUrl: buildUrl + "/e2f3a463d52decd4356a54329b3e1cc7.framework.js.unityweb",
-        codeUrl: buildUrl + "/4e6a441fcab823dbab36d3fe1c62aae7.wasm.unityweb",
+      // Some mobile user agents need special handling for keyboard & viewport
+      function isMobile() { return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent); }
+
+      // Unity config populated by the builder
+      const config = {
+        dataUrl: "%UNITY_WEBGL_DATA_URL%",
+        frameworkUrl: "%UNITY_WEBGL_FRAMEWORK_URL%",
+        codeUrl: "%UNITY_WEBGL_CODE_URL%",
         streamingAssetsUrl: "StreamingAssets",
-        companyName: "Felicity Games",
-        productName: "Laser Survivor",
-        productVersion: "1.0.0",
-        showBanner: unityShowBanner,
+        companyName: "%UNITY_COMPANY_NAME%",
+        productName: "%UNITY_PRODUCT_NAME%",
+        productVersion: "%UNITY_VERSION%",
+        matchWebGLToCanvasSize: false  // we manage it ourselves for crisp scaling
       };
 
-const loadingBar = document.querySelector("#unity-loading-bar");
-const progressBarFull = document.querySelector("#unity-progress-bar-full");
+      // Optional: respect initial default size from Player Settings if provided
+      try {
+        const defaultW = parseInt("%UNITY_WIDTH%".replace(/[^0-9]/g, '')) || 0;
+        const defaultH = parseInt("%UNITY_HEIGHT%".replace(/[^0-9]/g, '')) || 0;
+        if (defaultW && defaultH) {
+          canvas.width = defaultW;
+          canvas.height = defaultH;
+          canvas.style.width = defaultW + 'px';
+          canvas.style.height = defaultH + 'px';
+        }
+      } catch(e) {}
 
-let unityInstance;
-function updateCanvasSize() {
-	  let aspectRatio;
+      // Fullscreen toggle
+      fsBtn.addEventListener('click', () => {
+        if (!document.fullscreenElement) {
+          (canvas.requestFullscreen || canvas.webkitRequestFullscreen || canvas.msRequestFullscreen).call(canvas);
+        } else {
+          (document.exitFullscreen || document.webkitExitFullscreen || document.msExitFullscreen).call(document);
+        }
+      });
 
-	  if (window.innerHeight > window.innerWidth) {
-		// Portrait - 9:16
-		aspectRatio = 9 / 16;
-	  } else {
-		// Landscape - 16:10
-		aspectRatio = 16 / 10;
-	  }
+      // Create the Unity instance
+      let unityInstance = null;
+      createUnityInstance(canvas, config, (progress) => {
+        barFill.style.width = (progress * 100).toFixed(1) + '%';
+        statusEl.textContent = progress < 1 ? 'Loading… ' + Math.round(progress*100) + '%' : 'Initializing…';
+      }).then((instance) => {
+        unityInstance = instance;
+        // Ensure correct size once engine is ready
+        resizeCanvas();
+        loading.classList.add('hide');
+      }).catch((message) => {
+        statusEl.textContent = 'Error: ' + message;
+        console.error(message);
+      });
 
-	  const maxWidth = window.innerWidth;
-	  const maxHeight = window.innerHeight;
+      // Hook resize
+      window.addEventListener('resize', resizeCanvas);
 
-	  let width = maxWidth;
-	  let height = width / aspectRatio;
+      // Mobile adjustments
+      if (isMobile()) {
+        // Avoid iOS zoom bounce
+        document.body.style.textAlign = 'left';
+      }
 
-	  if (height > maxHeight) {
-		height = maxHeight;
-		width = height * aspectRatio;
-	  }
+      // Initial size
+      resizeCanvas();
+    })();
+  </script>
 
-	  canvas.style.width = `${width}px`;
-	  canvas.style.height = `${height}px`;
-	}
+  <!--
+  HOW TO USE (Unity):
+  1) Save this file as: Assets/WebGLTemplates/YandexStyle/index.html
+  2) In Unity: File → Build Settings → WebGL → Player Settings → Resolution and Presentation → WebGL Template → select "YandexStyle".
+  3) Build. Unity will replace %UNITY_*% tokens with your build artifacts and metadata.
 
-	window.addEventListener("resize", updateCanvasSize);
-	window.addEventListener("orientationchange", updateCanvasSize);
+  Optional (template.json):
+  Create Assets/WebGLTemplates/YandexStyle/template.json with:
+  {
+    "name": "Yandex-Style Responsive",
+    "author": "Your Name",
+    "version": "1.0.0",
+    "defaultWidth": 960,
+    "defaultHeight": 600,
+    "description": "Fullscreen, responsive canvas with minimal loading overlay."
+  }
 
-	loadingBar.style.display = "block";
-	updateCanvasSize();
-
-	const script = document.createElement("script");
-	script.src = loaderUrl;
-	script.onload = () => {
-	  createUnityInstance(canvas, config, (progress) => {
-		progressBarFull.style.width = 100 * progress + "%";
-	  }).then((instance) => {
-		unityInstance = instance;
-		loadingBar.style.display = "none";
-		// fullscreenButton.onclick = () => {
-		//   unityInstance.SetFullscreen(1);
-		// };
-	  }).catch((message) => {
-		alert(message);
-	  });
-	};
-
-
-      document.body.appendChild(script);
-
-    </script>
-  </body>
+  Notes:
+  • This template manages its own canvas sizing (matchWebGLToCanvasSize: false) and resizes on window changes for crisp rendering.
+  • The overlay disappears when the instance resolves; errors are shown in the status line.
+  • You can style the .btn or add more controls as needed.
+  -->
+</body>
 </html>
