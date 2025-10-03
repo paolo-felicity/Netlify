@@ -44,7 +44,7 @@
 
         // Build-time substituted URLs & metadata (modern tokens)
         const config = {
-          dataUrl: "Build/b43b767581a5492fc8563644ec08fa8a.data.unityweb",
+          dataUrl: "Build/e1e4b0dfbe67597b15dbf37b380366c2.data.unityweb",
           frameworkUrl: "Build/ea8423d205fe7515093b721ddb6f4d1b.framework.js.unityweb",
           codeUrl: "Build/16f88a8e0bcde6edc590847c2fbdb337.wasm.unityweb",
           streamingAssetsUrl: "StreamingAssets",
@@ -66,4 +66,23 @@
             canvas.width  = w;
             canvas.height = h;
 
-            if (unityInstance.Modul
+            if (unityInstance.Module && unityInstance.Module.setCanvasSize) {
+              unityInstance.Module.setCanvasSize(w, h);
+            }
+          }
+
+          // Initial + on resize
+          resizeCanvas();
+          window.addEventListener("resize", resizeCanvas);
+
+          // Optional: catch layout-driven changes too
+          if ("ResizeObserver" in window) {
+            new ResizeObserver(resizeCanvas).observe(document.body);
+          }
+        }).catch((e) => {
+          console.error("Unity init failed:", e);
+        });
+      })();
+    </script>
+  </body>
+</html>
